@@ -1,0 +1,14 @@
+---
+description: Copy addon files into the WoW AddOns folder after every addon file change
+alwaysApply: true
+---
+
+# Deploy to WoW AddOns
+
+After creating or updating any addon file (`.lua`, `.toc`, `.xml`, textures), copy **only addon-related files** into:
+
+`C:\Program Files (x86)\World of Warcraft\_retail_\Interface\AddOns\LaggyAddonDetector\`
+
+Do not copy `.cursor`, rules, git metadata, or other project files.
+
+Use overwrite copy so the in-game addon stays in sync without asking.

@@ -1,0 +1,14 @@
+## Interface: 120100, 120105
+## Title: Laggy Addon Detector
+## Notes: Live CPU and memory profiler. Minimap tooltip lists heavy addons; click for a sortable usage table.
+## Author: powercover
+## Version: 1.0.0
+## SavedVariables: LaggyAddonDetectorDB
+## IconTexture: Interface\Icons\INV_Misc_PocketWatch_01
+## AddonCompartmentFunc: LaggyAddonDetector_OnCompartmentClick
+## AddonCompartmentFuncOnEnter: LaggyAddonDetector_OnCompartmentEnter
+## AddonCompartmentFuncOnLeave: LaggyAddonDetector_OnCompartmentLeave
+
+Core.lua
+MinimapButton.lua
+UsageFrame.lua
