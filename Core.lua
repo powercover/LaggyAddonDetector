@@ -3,6 +3,11 @@ local addonName, ns = ...
 ns.addonName = addonName
 ns.rows = {}
 ns.listeners = {}
+ns.memoryCache = {}
+
+local TICK_SECONDS = 2
+local IDLE_CPU_SECONDS = 8
+local MEMORY_SECONDS = 15
 
 local DB_DEFAULTS = {
 	minimapPos = 215,
@@ -152,6 +157,36 @@ function ns.EnsureDB()
 	return ns.db
 end
 
+function ns.IsUiActive()
+	if ns.frame and ns.frame:IsShown() then
+		return true
+	end
+	if ns.minimapButton and GameTooltip:IsOwned(ns.minimapButton) then
+		return true
+	end
+	return false
+end
+
+local function InCombat()
+	return InCombatLockdown and InCombatLockdown()
+end
+
+local function ShouldRefreshMemory(opts)
+	if opts and opts.memory == false then
+		return false
+	end
+	if InCombat() then
+		return false
+	end
+	if opts and opts.memory == true then
+		return true
+	end
+	if not (ns.frame and ns.frame:IsShown()) then
+		return false
+	end
+	return not ns.lastMemUpdate or (GetTime() - ns.lastMemUpdate) >= MEMORY_SECONDS
+end
+
 local function CollectCPU(name, index, now)
 	if ns.HasProfiler() then
 		return SafeMetric(name, Metric.RecentAverageTime),
@@ -191,17 +226,16 @@ local function CollectCPU(name, index, now)
 	return recent, session, 0
 end
 
-function ns.Collect()
+function ns.Collect(opts)
+	opts = opts or {}
 	local now = GetTime()
 	if not ns.HasProfiler() and UpdateAddOnCPUUsage then
 		pcall(UpdateAddOnCPUUsage)
 	end
 
-	local inCombat = InCombatLockdown and InCombatLockdown()
-	if (not inCombat) and (not ns.lastMemUpdate or (now - ns.lastMemUpdate) >= 2) then
-		if UpdateAddOnMemoryUsage then
-			pcall(UpdateAddOnMemoryUsage)
-		end
+	local refreshMemory = ShouldRefreshMemory(opts)
+	if refreshMemory and UpdateAddOnMemoryUsage then
+		pcall(UpdateAddOnMemoryUsage)
 		ns.lastMemUpdate = now
 	end
 
@@ -212,11 +246,12 @@ function ns.Collect()
 		if name and security ~= "SECURE" and not name:find("^Blizzard_") and AddonLoaded(i) then
 			title = StripColors(title or name)
 			local cpuRecent, cpuSession, peak = CollectCPU(name, i, now)
-			local memory = 0
-			if GetAddOnMemoryUsage then
+			local memory = ns.memoryCache[name] or 0
+			if refreshMemory and GetAddOnMemoryUsage then
 				local ok, value = pcall(GetAddOnMemoryUsage, i)
 				if ok and type(value) == "number" then
 					memory = value
+					ns.memoryCache[name] = value
 				end
 			end
 			local severity = ns.Severity(cpuRecent, memory)
@@ -374,8 +409,18 @@ local function StartTicker()
 	if ns.ticker then
 		return
 	end
-	ns.ticker = C_Timer.NewTicker(1, function()
-		ns.Collect()
+	ns.ticker = C_Timer.NewTicker(TICK_SECONDS, function()
+		if ns.frame and ns.frame:IsShown() then
+			ns.Collect()
+			return
+		end
+		if ns.IsUiActive() then
+			ns.Collect({ memory = false })
+			return
+		end
+		if not ns.lastCollect or (GetTime() - ns.lastCollect) >= IDLE_CPU_SECONDS then
+			ns.Collect({ memory = false })
+		end
 	end)
 end
 
@@ -397,19 +442,22 @@ eventFrame:SetScript("OnEvent", function(_, event, arg1)
 			ns.CreateMinimapButton()
 		end
 		StartTicker()
-		C_Timer.After(1.5, function()
-			ns.Collect()
+		C_Timer.After(2, function()
+			ns.Collect({ memory = false })
 		end)
-		C_Timer.After(6, function()
-			ns.Collect()
+		C_Timer.After(8, function()
+			ns.Collect({ memory = true })
 			ns.PrintSummary("after login/reload")
 			if ns.needScriptProfile then
 				print("|cff33ccffLaggy Addon Detector|r: CPU timings need |cffffd133/console scriptProfile 1|r then a reload on this client. Memory tracking is already live.")
 			end
 		end)
 	elseif event == "PLAYER_ENTERING_WORLD" then
-		C_Timer.After(2, function()
-			ns.Collect()
+		C_Timer.After(3, function()
+			if ns.lastCollect and (GetTime() - ns.lastCollect) < 10 then
+				return
+			end
+			ns.Collect({ memory = false })
 		end)
 	end
 end)
@@ -420,7 +468,7 @@ SLASH_LAGGYADDONDETECTOR3 = "/laggydetector"
 SlashCmdList.LAGGYADDONDETECTOR = function(msg)
 	msg = (msg or ""):lower():gsub("^%s+", ""):gsub("%s+$", "")
 	if msg == "report" or msg == "scan" then
-		ns.Collect()
+		ns.Collect({ memory = true })
 		ns.PrintSummary("on demand")
 		return
 	end
@@ -436,6 +484,7 @@ function LaggyAddonDetector_OnCompartmentClick()
 end
 
 function LaggyAddonDetector_OnCompartmentEnter(addon, menuButton)
+	ns.Collect({ memory = false })
 	ns.ShowHeavyTooltip(menuButton or addon)
 end
 

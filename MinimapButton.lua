@@ -66,6 +66,7 @@ function ns.CreateMinimapButton()
 	end)
 
 	button:SetScript("OnEnter", function(self)
+		ns.Collect({ memory = false })
 		ns.ShowHeavyTooltip(self)
 	end)
 
