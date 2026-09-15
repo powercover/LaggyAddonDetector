@@ -125,9 +125,9 @@ local function RefreshRows(frame)
 	))
 
 	if ns.HasProfiler() then
-		frame.hint:SetText("Colors update live. Red = draining CPU/memory, yellow = average, green = lightweight.")
+		frame.hint:SetText("CPU updates while this window is open. Memory refreshes slowly so the detector does not hitch you.")
 	else
-		frame.hint:SetText("Memory is live. Enable scriptProfile and reload for CPU timings on this client.")
+		frame.hint:SetText("Memory refreshes slowly while this window is open. Enable scriptProfile and reload for CPU timings on this client.")
 	end
 
 	for _, header in ipairs(frame.headers) do
@@ -195,7 +195,7 @@ local function CreateUsageFrame()
 	report:SetPoint("TOPLEFT", 14, -14)
 	report:SetText("Chat report")
 	report:SetScript("OnClick", function()
-		ns.Collect()
+		ns.Collect({ memory = true })
 		ns.PrintSummary("from the table")
 	end)
 
@@ -294,7 +294,7 @@ local function CreateUsageFrame()
 	legend:SetText("|cffff3333Red = heavy|r   |cffffd133Yellow = average|r   |cff4ce65aGreen = lightweight|r")
 
 	frame:SetScript("OnShow", function()
-		ns.Collect()
+		ns.Collect({ memory = true })
 		RefreshRows(frame)
 		PlaySound(SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION or 852)
 	end)

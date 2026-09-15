@@ -41,7 +41,7 @@ CPU is milliseconds per frame. Memory is KB/MB.
 - Yellow: under **1.50 ms** CPU and under **40 MB**
 - Red: **1.50 ms+** CPU or **40 MB+** memory
 
-The table updates about once a second. Memory sampling pauses in combat so the detector itself does not hitch you.
+The table updates while it is open. Memory is sampled slowly, and not in combat, so the detector itself does not hitch you.
 
 On retail, CPU tracking uses Blizzard's always-on addon profiler. No extra console CVars needed.
 
