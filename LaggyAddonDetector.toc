@@ -1,14 +1,34 @@
 ## Interface: 120100, 120105
 ## Title: Laggy Addon Detector
-## Notes: Live CPU and memory profiler. Minimap tooltip lists heavy addons; click for a sortable usage table.
+## Notes: Finds the addon behind lag and stutter: live CPU per frame, slow frames and who caused them, memory growth.
 ## Author: powercover
-## Version: 1.0.1
+## Version: 2.0.0
+## X-License: All Rights Reserved
 ## SavedVariables: LaggyAddonDetectorDB
-## IconTexture: Interface\Icons\INV_Misc_PocketWatch_01
+## AllowLoadGameType: mainline
+## Category: Performance
+## Category-deDE: Leistung
+## Category-esES: Rendimiento
+## Category-esMX: Rendimiento
+## Category-frFR: Performances
+## Category-itIT: Prestazioni
+## Category-koKR: 성능
+## Category-ptBR: Desempenho
+## Category-ruRU: Производительность
+## Category-zhCN: 性能
+## Category-zhTW: 效能
+## IconTexture: Interface\AddOns\LaggyAddonDetector\Icon
 ## AddonCompartmentFunc: LaggyAddonDetector_OnCompartmentClick
 ## AddonCompartmentFuncOnEnter: LaggyAddonDetector_OnCompartmentEnter
 ## AddonCompartmentFuncOnLeave: LaggyAddonDetector_OnCompartmentLeave
 
+Locales\Locales.lua
+Utils.lua
+Profiler.lua
+Memory.lua
+SpikeWatch.lua
+Window.lua
+Popup.lua
+Overlay.lua
+Settings.lua
 Core.lua
-MinimapButton.lua
-UsageFrame.lua

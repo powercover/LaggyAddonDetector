@@ -1,0 +1,15 @@
+<Bindings>
+	<!-- No default keys: nothing is bound until you pick keys in the game's Key Bindings. -->
+	<Binding name="LAGGYADDONDETECTOR_WINDOW" category="BINDING_HEADER_LAGGYADDONDETECTOR">
+		LaggyAddonDetector_OnBinding("window")
+	</Binding>
+	<Binding name="LAGGYADDONDETECTOR_STATS" category="BINDING_HEADER_LAGGYADDONDETECTOR">
+		LaggyAddonDetector_OnBinding("stats")
+	</Binding>
+	<Binding name="LAGGYADDONDETECTOR_MARK" category="BINDING_HEADER_LAGGYADDONDETECTOR">
+		LaggyAddonDetector_OnBinding("mark")
+	</Binding>
+	<Binding name="LAGGYADDONDETECTOR_REPORT" category="BINDING_HEADER_LAGGYADDONDETECTOR">
+		LaggyAddonDetector_OnBinding("report")
+	</Binding>
+</Bindings>
