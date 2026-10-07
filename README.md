@@ -157,8 +157,16 @@ memory scan.
 
 ## Installation
 
-1. Download the latest release from
-   [GitHub](https://github.com/powercover/LaggyAddonDetector/releases/latest).
+### CurseForge and Wago
+
+Install it with the CurseForge app or the Wago app, or download it from
+[CurseForge](https://www.curseforge.com/wow/addons/laggy-addon-detector) or
+[Wago](https://addons.wago.io/addons/rN4rWwKD).
+
+### Manual
+
+1. Download `LaggyAddonDetector-<version>.zip` from the
+   [latest release](https://github.com/powercover/LaggyAddonDetector/releases/latest) on GitHub.
 2. Extract it into `World of Warcraft/_retail_/Interface/AddOns/`, so the `.toc` file ends up at
    `Interface/AddOns/LaggyAddonDetector/LaggyAddonDetector.toc`.
 3. Restart the game and make sure **Laggy Addon Detector** is enabled in the AddOns list.
