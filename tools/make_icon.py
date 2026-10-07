@@ -1,5 +1,6 @@
-"""Draws the addon's icon (Icon.tga, 128x128) and a preview sheet. Run from the addon folder:
-python tools/make_icon.py [preview.png]
+"""Draws the addon's icon: Icon.tga (128x128, for the game), Listing/icon-400.png and
+Listing/icon-512.png (for the CurseForge and Wago project pages), and optionally a preview sheet.
+Run from the addon folder: python tools/make_icon.py [preview.png]
 
 A round dial in neutral steel: a frame-time line that runs flat and jumps into one sharp spike,
 amber at its base and red at its tip. Drawn at 16x and scaled down for clean edges."""
@@ -21,15 +22,15 @@ def disc(draw, radius, fill):
 
 
 def radial(size, inner, outer, radius):
-    """A disc whose colour runs from `inner` at the centre to `outer` at `radius`."""
-    image = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    """A square whose colour runs from `inner` at the centre to `outer` at `radius` and beyond.
+    Opaque all over, so scaling it up leaves no see-through fringe where it's masked to a disc."""
+    image = Image.new("RGBA", (size, size), (0, 0, 0, 255))
     pixels = image.load()
     for y in range(size):
         for x in range(size):
-            d = math.hypot(x - size / 2 + 0.5, y - size / 2 + 0.5) / radius
-            if d <= 1:
-                t = d ** 1.6
-                pixels[x, y] = tuple(round(inner[i] + (outer[i] - inner[i]) * t) for i in range(3)) + (255,)
+            d = min(1.0, math.hypot(x - size / 2 + 0.5, y - size / 2 + 0.5) / radius)
+            t = d ** 1.6
+            pixels[x, y] = tuple(round(inner[i] + (outer[i] - inner[i]) * t) for i in range(3)) + (255,)
     return image
 
 
@@ -107,8 +108,7 @@ def build():
     shine = Image.new("RGBA", (S, S), (0, 0, 0, 0))
     ImageDraw.Draw(shine).ellipse((C - 250 * k, C - 250 * k, C + 250 * k, C + 250 * k), outline=(255, 255, 255, 46), width=round(5 * k))
     shine.putalpha(Image.composite(shine.getchannel("A"), Image.new("L", (S, S), 0), Image.linear_gradient("L").rotate(180).resize((S, S))))
-    icon = Image.alpha_composite(icon, shine)
-    return icon.resize((OUT, OUT), Image.LANCZOS)
+    return Image.alpha_composite(icon, shine)
 
 
 def preview(icon, path):
@@ -127,8 +127,13 @@ def preview(icon, path):
 
 
 if __name__ == "__main__":
-    icon = build()
+    drawing = build()
+    icon = drawing.resize((OUT, OUT), Image.LANCZOS)
     icon.save(ROOT / "Icon.tga")
+    listing = ROOT / "Listing"
+    listing.mkdir(exist_ok=True)
+    for size in (400, 512):
+        drawing.resize((size, size), Image.LANCZOS).save(listing / f"icon-{size}.png", optimize=True)
     if len(sys.argv) > 1:
         preview(icon, sys.argv[1])
-    print("Icon.tga written")
+    print("Icon.tga and Listing/icon-400.png, icon-512.png written")

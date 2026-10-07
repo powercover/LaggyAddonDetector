@@ -4,6 +4,8 @@
 ## Author: powercover
 ## Version: 2.0.0
 ## X-License: All Rights Reserved
+## X-Curse-Project-ID: 1697012
+## X-Wago-ID: rN4rWwKD
 ## SavedVariables: LaggyAddonDetectorDB
 ## AllowLoadGameType: mainline
 ## Category: Performance
